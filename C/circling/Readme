@@ -1,0 +1,12 @@
+Question 2. Modify your code in part 1 to turn the motor clockwise when you press 1 and anticlockwise when you press 2. [50] 
+The desired functionalities for validating QUESTION 2 are listed in TABLE II with four states. Notably, 
+these states should be able to switch smoothly during the evaluation procedure. Meanwhile, the updated 
+frequency in the EdSim51 simulator is recommended to set at 1Hz or 100Hz for evaluating the 
+effectiveness.
+TABLE II
+REQUIRED FUNCTIONALITY OF QUESTION 2
+State Key 1 Key 2 Motor
+0 Released Released Stop
+1 Pressed Released Clockwise
+2 Released Pressed Anti-clockwise
+3 Pressed Pressed Stop
