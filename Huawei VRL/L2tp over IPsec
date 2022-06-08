@@ -1,0 +1,108 @@
+L2TP OVER IPSEC
+
+
+
+
+sysname USG6000V1
+开启L2TP
+ l2tp enable
+设置acl 匹配l2tp的流量
+acl number 3001
+ rule 5 permit udp source-port eq 1701 
+配置ipsec安全提议
+ipsec proposal 10
+ esp authentication-algorithm sha1 
+ esp encryption-algorithm aes-128 
+
+配置ike安全提议
+ike proposal 10
+ encryption-algorithm aes-128 
+ dh group2 
+ authentication-algorithm sha1 
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256 
+ prf hmac-sha2-256 
+配置ike peer
+ike peer b
+ pre-shared-key huawei@123
+ ike-proposal 10
+ remote-id-type none
+
+配置ipsec模板
+ipsec policy-template t 1
+ security acl 3001
+ ike-peer b
+ proposal 10
+ tunnel local 20.20.20.20
+
+ipsec policy ipsec1 1 isakmp template t
+
+设置ip地址池
+ip pool 10
+ section 0 172.16.22.2 172.16.22.10
+ excluded-ip-address 172.16.22.2 
+设置aaa
+aaa
+ accounting-scheme b
+ service-scheme l2tpScheme
+  ip-pool 10
+
+设置l2tp组
+l2tp-group default-lns
+ tunnel password cipher huawei@123
+ allow l2tp virtual-template 1
+
+user-manage user user02
+  password huawei@123
+设置虚拟模板
+interface Virtual-Template1
+ ppp authentication-mode chap
+ remote service-scheme b
+ alias L2TP_LNS_1
+ undo service-manage enable
+
+
+接口绑定ipsec1
+interface GigabitEthernet1/0/0
+ undo shutdown
+ ip address 20.20.20.20 255.255.255.0
+ ipsec policy ipsec1
+
+
+interface GigabitEthernet1/0/1
+ undo shutdown
+ ip address 192.168.20.1 255.255.255.0
+ 
+
+将接口加入安全区域
+firewall zone trust
+ set priority 85
+ add interface GigabitEthernet0/0/0
+ add interface GigabitEthernet1/0/1
+
+firewall zone untrust
+ set priority 5
+ add interface GigabitEthernet1/0/0
+ add interface Virtual-Template0
+ add interface Virtual-Template1
+
+设置静态路由
+ip route-static 0.0.0.0 0.0.0.0 20.20.20.1
+
+
+
+设置安全策略
+security-policy
+ rule name "l2tp over ipsec"
+  source-zone local
+  source-zone trust
+  source-zone untrust
+  destination-zone local
+  destination-zone trust
+  destination-zone untrust
+  action permit
+设置nat策略
+nat-policy
+ rule name nat
+  egress-interface GigabitEthernet1/0/0
+  action source-nat easy-ip
