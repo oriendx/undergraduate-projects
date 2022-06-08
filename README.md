@@ -1,2 +1,2 @@
 # undergraduate-xjtlu
-code written during my under graduatestudy
+some of the projects and assignments I did during my undergraduate study
