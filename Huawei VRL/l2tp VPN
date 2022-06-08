@@ -1,0 +1,53 @@
+创建虚拟模板
+interface Virtual-Template1
+设置ppp认证类型
+ ppp authentication-mode chap
+ alias Virtual-Template1
+设置ip地址
+ ip address 192.168.11.1 255.255.255.0
+给客户端下发的地址池
+ remote address pool 1
+进入接口设置ip地址
+interface GigabitEthernet0/0/1
+ ip address 192.168.10.1 255.255.255.0
+#
+interface GigabitEthernet0/0/2
+ ip address 10.10.10.10 255.255.255.0
+
+将接口加入安全区域
+firewall zone trust
+ set priority 85
+ add interface GigabitEthernet0/0/0
+ add interface GigabitEthernet0/0/1
+ add interface Virtual-Template1
+#
+firewall zone untrust
+ set priority 5
+ add interface GigabitEthernet0/0/2
+开启L2TP
+l2tp enable
+设置l2tp组1
+l2tp-group 1
+接收的通道对端名称。
+ allow l2tp virtual-template 1 remote a
+设置隧道认证
+ tunnel password cipher %$%$M\:9$L8i&~6Hl#)*%>x4/$xo%$%$
+
+设置用户
+aaa
+local-user user01 password cipher %$%$ed-=8A;xc2Z$bHB*k1R"/ypg%$%$
+ local-user user01 service-type ppp
+定义用户的地址池
+ ip pool 1 192.168.11.2 192.168.11.100
+设置缺省路由
+ip route-static 0.0.0.0 0.0.0.0 10.10.10.1
+
+设置安全策略
+policy interzone local untrust inbound
+ policy 0
+  action permit
+  policy destination 10.10.10.10 0
+#
+policy interzone local untrust outbound
+ policy 0
+  action permit
