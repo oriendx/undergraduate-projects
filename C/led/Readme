@@ -1,0 +1,5 @@
+This assignment relates to the EdSIM51 Simulator. 
+Following are the assignment questions: 
+Question1. Write Embedded C code to turn on LED’s 0-3 when you press 1 on the keyboard 
+and LED’s 4-7 when you press 2. The lights should turn off when the keyboard number is not 
+pressed. [50]
